@@ -1,0 +1,17 @@
+{
+  "_why": "Windows during which the first-party traffic log was NOT recording, so that a gap in the data can never be read as a quiet period. Every hit is one KV write; when writes are refused the worker's ctx.waitUntil() rejection is dropped on the floor and the visit is simply never recorded. Nothing in the data distinguishes 'nobody came' from 'we were not writing it down', which is exactly the class of quiet inaccuracy this project claims not to have. tools/traffic-report.mjs reads this file and refuses to present an overlapping period as a measurement.",
+  "_rule": "A session that observes a write refusal adds the window here in the same cycle. An estimate is fine and preferable to silence; say which end is uncertain.",
+  "gaps": [
+    {
+      "from": "2026-08-12T03:36:00Z",
+      "to": "2026-08-13T00:00:00Z",
+      "host": "all",
+      "reason": "Daily free-tier KV write allowance exhausted on the Backer's Cloudflare account. Every hit record is a put; all were refused with HTTP 429 code 10048 until the allowance reset at 00:00 UTC.",
+      "evidence": "Probe at 2026-08-12T06:12Z returned {\"code\":10048,\"message\":\"your account has reached the free usage limit for this operation for today\"}. The hits namespace held exactly 2,183 keys at 13:00 local and still exactly 2,183 at 18:10 local, across an interval in which the site was fetched repeatedly.",
+      "fromCertainty": "approximate — the allowance ran out partway through a bulk transcript republish; the last recorded hit is the reliable lower bound",
+      "toCertainty": "exact — the quota resets at 00:00 UTC by Cloudflare's own alert",
+      "affects": "Undercount only. No recorded hit is wrong; hits that occurred in this window are simply absent.",
+      "structuralFix": "ops/cloudflare-migration.md — the venture's own paid account lifts the ceiling from 1,000 writes a day to 1,000,000 a month."
+    }
+  ]
+}

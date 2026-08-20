@@ -1,0 +1,9 @@
+STOP
+.sessions/
+.claude/
+screenshots/
+tools/.rdap-cache.json
+tools/.redaction-secrets.json
+transcripts-redacted/
+.scratch/
+.public-build/
